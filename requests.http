@@ -3,6 +3,20 @@ POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
+  "email": "pedro@teste.com",
+  "password": "123456"
+}
+
+### login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
   "email": "teste@teste.com",
   "password": "123456"
 }
+
+
+### me
+GET http://localhost:3000/auth/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMDc2YjdlMC1jZTE2LTQ0MGItODQzMi1mZDI0MzUwYWYzM2IiLCJpYXQiOjE3Njc3MzkwOTcsImV4cCI6MTc2NzgyNTQ5N30.3ghndVLgzcTblQXW1dbilV7MR46EYtW1fkladjEZlWA
