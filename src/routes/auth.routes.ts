@@ -155,3 +155,92 @@ authRoutes.post("/login", async (req, res) => {
 
   return res.json({ token })
 })
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email()
+})
+
+authRoutes.post("/forgot-password", async (req, res) => {
+  const parsed = forgotPasswordSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      message: "Dados inválidos",
+      errors: parsed.error.flatten()
+    })
+  }
+
+  const { email } = parsed.data
+
+  const user = await prisma.user.findUnique({
+    where: { email }
+  })
+
+  if (!user) {
+    // não revela se o email existe
+    return res.json({ message: "Se o email existir, um código foi gerado" })
+  }
+
+  const code = Math.floor(100000 + Math.random() * 900000).toString()
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 min
+
+  await prisma.passwordReset.create({
+    data: {
+      code,
+      expiresAt,
+      userId: user.id
+    }
+  })
+
+  // modo dev: retorna o código
+  return res.json({
+    message: "Código gerado",
+    code
+  })
+})
+
+const resetPasswordSchema = z.object({
+  code: z.string().length(6),
+  newPassword: z.string().min(6)
+})
+
+authRoutes.post("/reset-password", async (req, res) => {
+  const parsed = resetPasswordSchema.safeParse(req.body)
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      message: "Dados inválidos",
+      errors: parsed.error.flatten()
+    })
+  }
+
+  const { code, newPassword } = parsed.data
+
+  const reset = await prisma.passwordReset.findFirst({
+    where: {
+      code,
+      used: false,
+      expiresAt: {
+        gt: new Date()
+      }
+    }
+  })
+
+  if (!reset) {
+    return res.status(400).json({ message: "Código inválido ou expirado" })
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 10)
+
+  await prisma.user.update({
+    where: { id: reset.userId },
+    data: { password: passwordHash }
+  })
+
+  await prisma.passwordReset.update({
+    where: { id: reset.id },
+    data: { used: true }
+  })
+
+  return res.json({ message: "Senha atualizada com sucesso" })
+})
