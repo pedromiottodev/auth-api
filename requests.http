@@ -3,8 +3,8 @@ POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
-  "email": "pedro@teste.com",
-  "password": "123456"
+  "email": "pedro@gmail.com",
+  "password": "123pedro"
 }
 
 ### login
@@ -12,14 +12,14 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-  "email": "teste@teste.com",
-  "password": "123456"
+  "email": "pedro@gmail.com",
+  "password": "123pedro"
 }
 
 
 ### me
 GET http://localhost:3000/auth/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMDc2YjdlMC1jZTE2LTQ0MGItODQzMi1mZDI0MzUwYWYzM2IiLCJpYXQiOjE3Njc3MzkwOTcsImV4cCI6MTc2NzgyNTQ5N30.3ghndVLgzcTblQXW1dbilV7MR46EYtW1fkladjEZlWA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MDkwYmM0Yy1iZWRhLTRhZmItYmMwOS02Y2Y0ZjE3MTIzYTQiLCJpYXQiOjE3Njc3NDk1MTYsImV4cCI6MTc2NzgzNTkxNn0.D9P6kyb_i-oJu_Z-QrCRFzYyxlmqId3z2ewFxAyFNHk
 
 
 ### esqueceu a senha
@@ -35,5 +35,5 @@ Content-Type: application/json
 POST http://localhost:3000/auth/reset-password
 Content-Type: application/json
 
-{ "code": "290808", "newPassword": "novaSenha123" }
+{ "code": "250055", "newPassword": "senha123" }
 
