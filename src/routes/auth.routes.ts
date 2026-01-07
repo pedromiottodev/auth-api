@@ -4,7 +4,6 @@ import * as bcrypt from "bcrypt"
 import { prisma } from "../lib/prisma"
 import jwt from "jsonwebtoken"
 import { auth } from "../middlewares/auth"
-import { type SignOptions } from "jsonwebtoken"
 
 
 export const authRoutes = Router()
@@ -52,7 +51,7 @@ authRoutes.post("/register", async (req, res) => {
 })
 
 const loginSchema = z.object({
-  email: z.email(),
+  email: z.string().email(),
   password: z.string().min(6)
 })
 
@@ -116,7 +115,7 @@ authRoutes.get("/me", auth, async (req, res) => {
 })
 
 const forgotPasswordSchema = z.object({
-  email: z.email()
+  email: z.string().email()
 })
 
 authRoutes.post("/forgot-password", async (req, res) => {
@@ -151,10 +150,9 @@ authRoutes.post("/forgot-password", async (req, res) => {
     }
   })
 
-  return res.json({
-    message: "Código gerado",
-    code
-  })
+  console.log(`[RESET CODE] email=${email} code=${code}`)
+  return res.json({ message: "Se o email existir, um código foi gerado" })
+
 })
 
 const resetPasswordSchema = z.object({
@@ -195,10 +193,15 @@ authRoutes.post("/reset-password", async (req, res) => {
     data: { password: passwordHash }
   })
 
-  await prisma.passwordReset.update({
-    where: { id: reset.id },
-    data: { used: true }
-  })
+  await prisma.passwordReset.updateMany({
+  where: {
+    userId: reset.userId,
+    used: false
+  },
+  data: {
+    used: true
+  }
+})
 
   return res.json({ message: "Senha atualizada com sucesso" })
 })

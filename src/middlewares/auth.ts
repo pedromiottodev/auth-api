@@ -11,10 +11,15 @@ export function auth(req: Request, res: Response, next: NextFunction) {
 
     if (!authToken) {
         
-        return res.status(401).json({error: "Token inválido"})  
+        return res.status(401).json({error: "Token ausente"})  
     }
 
-    const [, token] = authToken.split(" ")
+    const [type, token] = authToken.split(" ")
+
+    if (type !== "Bearer" || !token) {
+        return res.status(401).json({ message: "Token inválido" })
+    }
+
 
     const secret = process.env.JWT_SECRET
     if (!secret) {
@@ -28,6 +33,6 @@ export function auth(req: Request, res: Response, next: NextFunction) {
         return next()
         
     } catch (err) {
-        return res.status(401)
+        return res.status(401).json({ message: "Token inválido" })
     }
 }
